@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queue Web App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #f8f9fa;
+        }
+        #queue-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #ccc;
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        #queue {
+            margin: 20px 0;
+            list-style: none;
+            padding: 0;
+            width: 100%;
+        }
+        #queue li {
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            text-align: center;
+            word-break: break-word;
+        }
+        #queue li.top {
+            font-size: 1.2em;
+            font-weight: bold;
+            padding: 15px;
+            background: #e2f0d9;
+            border: 5px solid #13e744;
+        }
+        #controls {
+            display: flex;
+            gap: 10px;
+        }
+        #controls button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #007bff;
+            color: #fff;
+        }
+        #controls button:hover {
+            background: #0056b3;
+        }
+        #new-text {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="queue-container">
+    <ul id="queue"></ul>
+    <input type="text" id="new-text" placeholder="Name">
+    <div id="controls">
+        <button onclick="enqueue()">Add Name</button>
+        <button onclick="dequeue()">Remove First</button>
+    </div>
+</div>
+
+<script>
+    const queue = [];
+    const textColors = {};
+
+    function hashCode(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return hash;
+    }
+
+    function intToRGB(i) {
+        const c = (i & 0x00FFFFFF)
+            .toString(16)
+            .toUpperCase();
+        return "00000".substring(0, 6 - c.length) + c;
+    }
+
+    function getColorForText(text) {
+        if (!textColors[text]) {
+            const hash = hashCode(text);
+            const color = intToRGB(hash);
+            textColors[text] = `#${color}`;
+        }
+        return textColors[text];
+    }
+
+    function updateQueueDisplay() {
+        const queueContainer = document.getElementById('queue');
+        queueContainer.innerHTML = '';
+        queue.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            li.style.backgroundColor = getColorForText(item);
+            if (index === 0) {
+                li.classList.add('top');
+            }
+            queueContainer.appendChild(li);
+        });
+    }
+
+    function enqueue() {
+        const newText = document.getElementById('new-text').value;
+        if (newText) {
+            queue.push(newText);
+            document.getElementById('new-text').value = '';
+            updateQueueDisplay();
+        }
+    }
+
+    function dequeue() {
+        if (queue.length > 0) {
+            queue.shift();
+            updateQueueDisplay();
+        }
+    }
+</script>
+
+</body>
+</html>
